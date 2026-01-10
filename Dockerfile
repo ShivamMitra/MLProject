@@ -1,31 +1,21 @@
-# 1. Use the current stable Python 3.12 slim image on Debian Bookworm
+# 1. Use the modern Python 3.12 Bookworm base
 FROM python:3.12-slim-bookworm
-
-# 2. Set environment variables to optimize Python performance
-ENV PYTHONDONTWRITEBYTECODE=1 \
-    PYTHONUNBUFFERED=1
 
 WORKDIR /app
 
-# 3. Install system dependencies in one layer and clean up to save space
-RUN apt-get update && apt-get install -y --no-install-recommends \
-    ffmpeg \
-    libsm6 \
-    libxext6 \
-    unzip \
-    && rm -rf /var/lib/apt/lists/*
+# 2. Update package list and install minimal dependencies for AWS CLI (curl/unzip if needed)
+# Using apt-get is preferred for scripting over the standard 'apt'
+RUN apt-get update && \
+    apt-get install -y --no-install-recommends \
+    curl unzip && \
+    rm -rf /var/lib/apt/lists/*
 
-# 4. Use a separate layer for requirements to leverage Docker cache
-COPY requirements.txt .
+# 3. Install AWS CLI using pip (Recommended for Python environments)
+# This bypasses the apt repository error entirely
+RUN pip install --no-cache-dir awscli
+
+# 4. Copy app files and install project dependencies
+COPY . /app
 RUN pip install --no-cache-dir -r requirements.txt
 
-# 5. Copy the application code
-COPY . .
-
-# 6. Use a non-root user for security (Production Best Practice)
-RUN useradd -m appuser
-USER appuser
-
-# 7. Use an executable list for CMD
-EXPOSE 8080
 CMD ["python3", "app.py"]
