@@ -2,6 +2,7 @@
 
 **An End-to-End Machine Learning Application**  
 This project contains the full pipeline for building, training, saving, and serving a machine learning model — including deployment options on AWS Elastic Beanstalk and AWS EC2.
+[![workflow](https://github.com/ShivamMitra/MLProject/actions/workflows/main.yaml/badge.svg)](https://github.com/ShivamMitra/MLProject/actions/workflows/main.yaml)
 
 ---
 
